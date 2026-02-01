@@ -12,6 +12,20 @@ const badgeVariants = cva(
         secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
+        // Course difficulty levels
+        beginner: "border-success/30 bg-success/10 text-success",
+        intermediate: "border-warning/30 bg-warning/10 text-warning",
+        advanced: "border-destructive/30 bg-destructive/10 text-destructive",
+        // Course status
+        enrolled: "border-accent/30 bg-accent/10 text-accent",
+        completed: "border-success/30 bg-success/10 text-success",
+        inProgress: "border-primary/30 bg-primary/10 text-primary",
+        // Module type
+        video: "border-primary/30 bg-primary/10 text-primary",
+        quiz: "border-warning/30 bg-warning/10 text-warning",
+        assignment: "border-accent/30 bg-accent/10 text-accent",
+        // New badge
+        new: "border-accent/30 bg-accent text-accent-foreground",
       },
     },
     defaultVariants: {
