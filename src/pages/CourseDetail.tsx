@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/layout/Header";
@@ -129,6 +129,11 @@ const testimonials = [
 
 export default function CourseDetail() {
   const { courseId } = useParams();
+  const navigate = useNavigate();
+
+  const handleStartLearning = () => {
+    navigate(`/learn/${courseId || courseData.id}`);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -223,9 +228,9 @@ export default function CourseDetail() {
                     <p className="text-sm text-muted-foreground">Lifetime access</p>
                   </div>
 
-                  <Button variant="accent" size="xl" className="w-full">
+                  <Button variant="accent" size="xl" className="w-full" onClick={handleStartLearning}>
                     <Play className="h-5 w-5" />
-                    Enroll Now - It's Free
+                    Start Learning
                   </Button>
 
                   <Button variant="outline" className="w-full">
@@ -370,7 +375,7 @@ export default function CourseDetail() {
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
             Join {courseData.studentsCount.toLocaleString()} learners and start your journey to becoming a Polars expert today.
           </p>
-          <Button variant="accent" size="xl" className="mt-8">
+          <Button variant="accent" size="xl" className="mt-8" onClick={handleStartLearning}>
             <Play className="h-5 w-5" />
             Start Learning Now
           </Button>
