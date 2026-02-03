@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ReactPlayer from "react-player";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -36,9 +37,9 @@ const mockCourse = {
       id: "mod-1",
       title: "Introduction to Polars",
       lessons: [
-        { id: "les-1-1", title: "What is Polars?", type: "video", duration: "8:24", completed: true },
-        { id: "les-1-2", title: "Installation & Setup", type: "video", duration: "5:12", completed: true },
-        { id: "les-1-3", title: "Your First DataFrame", type: "video", duration: "12:45", completed: false },
+        { id: "les-1-1", title: "What is Polars?", type: "video", duration: "8:24", completed: true, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+        { id: "les-1-2", title: "Installation & Setup", type: "video", duration: "5:12", completed: true, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+        { id: "les-1-3", title: "Your First DataFrame", type: "video", duration: "12:45", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
         { id: "les-1-4", title: "Module Quiz", type: "quiz", duration: "10 min", completed: false },
       ],
     },
@@ -46,19 +47,19 @@ const mockCourse = {
       id: "mod-2",
       title: "Data Selection & Filtering",
       lessons: [
-        { id: "les-2-1", title: "Selecting Columns", type: "video", duration: "10:30", completed: false },
-        { id: "les-2-2", title: "Filtering Rows", type: "video", duration: "14:20", completed: false },
+        { id: "les-2-1", title: "Selecting Columns", type: "video", duration: "10:30", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+        { id: "les-2-2", title: "Filtering Rows", type: "video", duration: "14:20", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
         { id: "les-2-3", title: "Practice Exercise", type: "assignment", duration: "20 min", completed: false },
-        { id: "les-2-4", title: "Advanced Filtering", type: "video", duration: "11:15", completed: false },
+        { id: "les-2-4", title: "Advanced Filtering", type: "video", duration: "11:15", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
       ],
     },
     {
       id: "mod-3",
       title: "Data Transformations",
       lessons: [
-        { id: "les-3-1", title: "Creating New Columns", type: "video", duration: "9:45", completed: false },
-        { id: "les-3-2", title: "Expressions Deep Dive", type: "video", duration: "18:30", completed: false },
-        { id: "les-3-3", title: "Lazy vs Eager Execution", type: "video", duration: "15:00", completed: false },
+        { id: "les-3-1", title: "Creating New Columns", type: "video", duration: "9:45", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+        { id: "les-3-2", title: "Expressions Deep Dive", type: "video", duration: "18:30", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+        { id: "les-3-3", title: "Lazy vs Eager Execution", type: "video", duration: "15:00", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
         { id: "les-3-4", title: "Transformation Quiz", type: "quiz", duration: "15 min", completed: false },
       ],
     },
@@ -66,9 +67,9 @@ const mockCourse = {
       id: "mod-4",
       title: "Aggregations & GroupBy",
       lessons: [
-        { id: "les-4-1", title: "Basic Aggregations", type: "video", duration: "12:00", completed: false },
-        { id: "les-4-2", title: "GroupBy Operations", type: "video", duration: "16:45", completed: false },
-        { id: "les-4-3", title: "Window Functions", type: "video", duration: "20:30", completed: false },
+        { id: "les-4-1", title: "Basic Aggregations", type: "video", duration: "12:00", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+        { id: "les-4-2", title: "GroupBy Operations", type: "video", duration: "16:45", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+        { id: "les-4-3", title: "Window Functions", type: "video", duration: "20:30", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
         { id: "les-4-4", title: "Final Project", type: "assignment", duration: "45 min", completed: false },
       ],
     },
@@ -93,6 +94,10 @@ export default function CoursePlayer() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [openModules, setOpenModules] = useState<string[]>(["mod-1", "mod-2"]);
+  const [playing, setPlaying] = useState(false);
+  const [played, setPlayed] = useState(0);
+  const [volume, setVolume] = useState(0.8);
+  const [muted, setMuted] = useState(false);
 
   // Find current lesson
   const allLessons = mockCourse.modules.flatMap((m) =>
@@ -298,17 +303,50 @@ export default function CoursePlayer() {
         <main className="flex-1 overflow-auto">
           <div className="max-w-5xl mx-auto">
             {/* Video Player */}
-            <div className="aspect-video bg-muted/30 relative">
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
-                <div className="text-center">
-                  <div className="w-20 h-20 rounded-full bg-primary/90 flex items-center justify-center mx-auto mb-4 cursor-pointer hover:bg-primary transition-colors hover:scale-105">
-                    <Play className="h-8 w-8 text-primary-foreground ml-1" fill="currentColor" />
+            <div className="aspect-video bg-black relative">
+              {currentLesson?.type === "video" && currentLesson?.videoUrl ? (
+                <ReactPlayer
+                  src={currentLesson.videoUrl}
+                  width="100%"
+                  height="100%"
+                  playing={playing}
+                  volume={volume}
+                  muted={muted}
+                  onPlay={() => setPlaying(true)}
+                  onPause={() => setPlaying(false)}
+                  onTimeUpdate={(e) => {
+                    const video = e.currentTarget;
+                    if (video.duration) {
+                      setPlayed(video.currentTime / video.duration);
+                    }
+                  }}
+                  onEnded={() => {
+                    setPlaying(false);
+                    // Auto-advance to next lesson when video ends
+                    if (nextLesson) {
+                      navigateToLesson(nextLesson.id);
+                    }
+                  }}
+                  controls
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
+                  <div className="text-center">
+                    <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                      {currentLesson?.type === "quiz" ? (
+                        <HelpCircle className="h-8 w-8 text-muted-foreground" />
+                      ) : (
+                        <FileText className="h-8 w-8 text-muted-foreground" />
+                      )}
+                    </div>
+                    <p className="text-muted-foreground text-sm">
+                      {currentLesson?.type === "quiz" 
+                        ? "Quiz content will appear here" 
+                        : "Assignment content will appear here"}
+                    </p>
                   </div>
-                  <p className="text-muted-foreground text-sm">
-                    Video player placeholder - integrate with your video hosting
-                  </p>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Lesson Content */}
