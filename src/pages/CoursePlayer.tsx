@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ReactPlayer from "react-player";
+import { Quiz, type QuizQuestion } from "@/components/courses/Quiz";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -72,6 +73,69 @@ const mockCourse = {
         { id: "les-4-3", title: "Window Functions", type: "video", duration: "20:30", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
         { id: "les-4-4", title: "Final Project", type: "assignment", duration: "45 min", completed: false },
       ],
+    },
+  ],
+};
+
+// Mock quiz data - will be replaced with real data from database
+const mockQuizzes: Record<string, QuizQuestion[]> = {
+  "les-1-4": [
+    {
+      id: "q1",
+      question: "What is Polars primarily used for?",
+      options: [
+        "Web development",
+        "Data manipulation and analysis",
+        "Machine learning model training",
+        "Database management",
+      ],
+      correctAnswer: 1,
+      explanation: "Polars is a fast DataFrame library designed for data manipulation and analysis, similar to pandas but with better performance.",
+    },
+    {
+      id: "q2",
+      question: "Which language is Polars written in?",
+      options: ["Python", "JavaScript", "Rust", "C++"],
+      correctAnswer: 2,
+      explanation: "Polars is written in Rust, which provides memory safety and excellent performance. It has Python bindings for easy use.",
+    },
+    {
+      id: "q3",
+      question: "What is a key advantage of Polars over pandas?",
+      options: [
+        "More functions available",
+        "Better documentation",
+        "Lazy evaluation and parallel processing",
+        "Easier syntax",
+      ],
+      correctAnswer: 2,
+      explanation: "Polars supports lazy evaluation which optimizes query execution, and automatically parallelizes operations for better performance.",
+    },
+  ],
+  "les-3-4": [
+    {
+      id: "q1",
+      question: "What does lazy evaluation mean in Polars?",
+      options: [
+        "Operations are executed immediately",
+        "Operations are queued and optimized before execution",
+        "Only simple operations are supported",
+        "Data is loaded partially",
+      ],
+      correctAnswer: 1,
+      explanation: "Lazy evaluation means operations are not executed immediately. Instead, they are queued and the query plan is optimized before execution.",
+    },
+    {
+      id: "q2",
+      question: "How do you trigger execution of a lazy DataFrame?",
+      options: [
+        "Call .execute()",
+        "Call .collect()",
+        "Call .run()",
+        "It executes automatically",
+      ],
+      correctAnswer: 1,
+      explanation: "The .collect() method triggers the execution of a lazy DataFrame and returns an eager DataFrame with the results.",
     },
   ],
 };
@@ -329,20 +393,25 @@ export default function CoursePlayer() {
                   }}
                   controls
                 />
+              ) : currentLesson?.type === "quiz" ? (
+                <div className="bg-muted/30">
+                  <Quiz
+                    questions={mockQuizzes[currentLesson.id] || []}
+                    title={currentLesson.title}
+                    onComplete={(score, total) => {
+                      console.log(`Quiz completed: ${score}/${total}`);
+                      // TODO: Save progress to database
+                    }}
+                  />
+                </div>
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
+                <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
                   <div className="text-center">
                     <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                      {currentLesson?.type === "quiz" ? (
-                        <HelpCircle className="h-8 w-8 text-muted-foreground" />
-                      ) : (
-                        <FileText className="h-8 w-8 text-muted-foreground" />
-                      )}
+                      <FileText className="h-8 w-8 text-muted-foreground" />
                     </div>
                     <p className="text-muted-foreground text-sm">
-                      {currentLesson?.type === "quiz" 
-                        ? "Quiz content will appear here" 
-                        : "Assignment content will appear here"}
+                      Assignment content will appear here
                     </p>
                   </div>
                 </div>
