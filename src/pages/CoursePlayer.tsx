@@ -1,12 +1,11 @@
-import { useState } from "react";
-import ReactPlayer from "react-player";
+import { useState, useEffect } from "react";
 import { Quiz, type QuizQuestion } from "@/components/courses/Quiz";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,125 +19,16 @@ import {
   Play,
   FileText,
   HelpCircle,
-  Download,
   CheckCircle2,
   Clock,
   Menu,
   X,
   BookOpen,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-// Mock course data - will be replaced with real data from database
-const mockCourse = {
-  id: "polars-fundamentals",
-  title: "Python Polars Fundamentals",
-  modules: [
-    {
-      id: "mod-1",
-      title: "Introduction to Polars",
-      lessons: [
-        { id: "les-1-1", title: "What is Polars?", type: "video", duration: "8:24", completed: true, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-1-2", title: "Installation & Setup", type: "video", duration: "5:12", completed: true, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-1-3", title: "Your First DataFrame", type: "video", duration: "12:45", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-1-4", title: "Module Quiz", type: "quiz", duration: "10 min", completed: false },
-      ],
-    },
-    {
-      id: "mod-2",
-      title: "Data Selection & Filtering",
-      lessons: [
-        { id: "les-2-1", title: "Selecting Columns", type: "video", duration: "10:30", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-2-2", title: "Filtering Rows", type: "video", duration: "14:20", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-2-3", title: "Practice Exercise", type: "assignment", duration: "20 min", completed: false },
-        { id: "les-2-4", title: "Advanced Filtering", type: "video", duration: "11:15", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-      ],
-    },
-    {
-      id: "mod-3",
-      title: "Data Transformations",
-      lessons: [
-        { id: "les-3-1", title: "Creating New Columns", type: "video", duration: "9:45", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-3-2", title: "Expressions Deep Dive", type: "video", duration: "18:30", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-3-3", title: "Lazy vs Eager Execution", type: "video", duration: "15:00", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-3-4", title: "Transformation Quiz", type: "quiz", duration: "15 min", completed: false },
-      ],
-    },
-    {
-      id: "mod-4",
-      title: "Aggregations & GroupBy",
-      lessons: [
-        { id: "les-4-1", title: "Basic Aggregations", type: "video", duration: "12:00", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-4-2", title: "GroupBy Operations", type: "video", duration: "16:45", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-4-3", title: "Window Functions", type: "video", duration: "20:30", completed: false, videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-        { id: "les-4-4", title: "Final Project", type: "assignment", duration: "45 min", completed: false },
-      ],
-    },
-  ],
-};
-
-// Mock quiz data - will be replaced with real data from database
-const mockQuizzes: Record<string, QuizQuestion[]> = {
-  "les-1-4": [
-    {
-      id: "q1",
-      question: "What is Polars primarily used for?",
-      options: [
-        "Web development",
-        "Data manipulation and analysis",
-        "Machine learning model training",
-        "Database management",
-      ],
-      correctAnswer: 1,
-      explanation: "Polars is a fast DataFrame library designed for data manipulation and analysis, similar to pandas but with better performance.",
-    },
-    {
-      id: "q2",
-      question: "Which language is Polars written in?",
-      options: ["Python", "JavaScript", "Rust", "C++"],
-      correctAnswer: 2,
-      explanation: "Polars is written in Rust, which provides memory safety and excellent performance. It has Python bindings for easy use.",
-    },
-    {
-      id: "q3",
-      question: "What is a key advantage of Polars over pandas?",
-      options: [
-        "More functions available",
-        "Better documentation",
-        "Lazy evaluation and parallel processing",
-        "Easier syntax",
-      ],
-      correctAnswer: 2,
-      explanation: "Polars supports lazy evaluation which optimizes query execution, and automatically parallelizes operations for better performance.",
-    },
-  ],
-  "les-3-4": [
-    {
-      id: "q1",
-      question: "What does lazy evaluation mean in Polars?",
-      options: [
-        "Operations are executed immediately",
-        "Operations are queued and optimized before execution",
-        "Only simple operations are supported",
-        "Data is loaded partially",
-      ],
-      correctAnswer: 1,
-      explanation: "Lazy evaluation means operations are not executed immediately. Instead, they are queued and the query plan is optimized before execution.",
-    },
-    {
-      id: "q2",
-      question: "How do you trigger execution of a lazy DataFrame?",
-      options: [
-        "Call .execute()",
-        "Call .collect()",
-        "Call .run()",
-        "It executes automatically",
-      ],
-      correctAnswer: 1,
-      explanation: "The .collect() method triggers the execution of a lazy DataFrame and returns an eager DataFrame with the results.",
-    },
-  ],
-};
+import { useCourse, useLessonProgress, useUpdateLessonProgress } from "@/hooks/use-courses";
+import { useAuth } from "@/contexts/AuthContext";
 
 const getLessonIcon = (type: string) => {
   switch (type) {
@@ -156,25 +46,52 @@ const getLessonIcon = (type: string) => {
 export default function CoursePlayer() {
   const { courseId, lessonId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [openModules, setOpenModules] = useState<string[]>(["mod-1", "mod-2"]);
+  const [openModules, setOpenModules] = useState<string[]>([]);
   const [playing, setPlaying] = useState(false);
   const [played, setPlayed] = useState(0);
-  const [volume, setVolume] = useState(0.8);
-  const [muted, setMuted] = useState(false);
+
+  const { data: course, isLoading: courseLoading } = useCourse(courseId);
+  const { data: lessonProgress, isLoading: progressLoading } = useLessonProgress(course?.id);
+  const updateProgressMutation = useUpdateLessonProgress();
+
+  // Build flat lesson list
+  const allLessons = course?.modules?.flatMap((m) =>
+    m.lessons?.map((l) => ({ ...l, moduleId: m.id, moduleTitle: m.title })) || []
+  ) || [];
 
   // Find current lesson
-  const allLessons = mockCourse.modules.flatMap((m) =>
-    m.lessons.map((l) => ({ ...l, moduleId: m.id, moduleTitle: m.title }))
-  );
-  const currentLessonIndex = allLessons.findIndex((l) => l.id === lessonId) || 0;
+  const currentLessonIndex = lessonId 
+    ? allLessons.findIndex((l) => l.id === lessonId)
+    : 0;
   const currentLesson = allLessons[currentLessonIndex] || allLessons[0];
   const prevLesson = allLessons[currentLessonIndex - 1];
   const nextLesson = allLessons[currentLessonIndex + 1];
 
+  // Build progress map
+  const progressMap = new Map(lessonProgress?.map((p) => [p.lesson_id, p]) || []);
+
   // Calculate progress
-  const completedCount = allLessons.filter((l) => l.completed).length;
-  const progressPercent = Math.round((completedCount / allLessons.length) * 100);
+  const completedCount = lessonProgress?.filter((p) => p.completed).length || 0;
+  const progressPercent = allLessons.length > 0 
+    ? Math.round((completedCount / allLessons.length) * 100) 
+    : 0;
+
+  // Auto-expand module containing current lesson
+  useEffect(() => {
+    if (currentLesson?.moduleId && !openModules.includes(currentLesson.moduleId)) {
+      setOpenModules((prev) => [...prev, currentLesson.moduleId]);
+    }
+  }, [currentLesson?.moduleId]);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!user && !courseLoading) {
+      navigate("/login");
+    }
+  }, [user, courseLoading, navigate]);
 
   const toggleModule = (moduleId: string) => {
     setOpenModules((prev) =>
@@ -187,6 +104,88 @@ export default function CoursePlayer() {
   const navigateToLesson = (lessonId: string) => {
     navigate(`/learn/${courseId}/${lessonId}`);
   };
+
+  const handleLessonComplete = async () => {
+    if (!currentLesson || !user) return;
+
+    try {
+      await updateProgressMutation.mutateAsync({
+        lessonId: currentLesson.id,
+        completed: true,
+      });
+    } catch (error) {
+      console.error("Failed to update progress:", error);
+    }
+  };
+
+  const handleQuizComplete = async (score: number, total: number) => {
+    if (!currentLesson || !user) return;
+
+    try {
+      await updateProgressMutation.mutateAsync({
+        lessonId: currentLesson.id,
+        completed: true,
+        quizScore: (score / total) * 100,
+      });
+    } catch (error) {
+      console.error("Failed to save quiz progress:", error);
+    }
+  };
+
+  // Get quiz questions from lesson content
+  const getQuizQuestions = (): QuizQuestion[] => {
+    if (!currentLesson?.content) return [];
+    
+    const content = currentLesson.content as { questions?: QuizQuestion[] };
+    return content.questions || [];
+  };
+
+  // Get video URL from lesson content
+  const getVideoUrl = (): string | null => {
+    if (!currentLesson?.content) return null;
+    
+    const content = currentLesson.content as { videoUrl?: string };
+    return content.videoUrl || null;
+  };
+
+  // Loading state
+  if (courseLoading || progressLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-8 w-8" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          <Skeleton className="h-4 w-32" />
+        </header>
+        <div className="flex flex-1">
+          <aside className="w-80 border-r border-border bg-card p-4 space-y-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-2 w-full" />
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-16 w-full" />
+            ))}
+          </aside>
+          <main className="flex-1 p-8">
+            <Skeleton className="aspect-video w-full max-w-4xl" />
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  // Course not found
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">Course Not Found</h1>
+          <Button onClick={() => navigate("/catalog")}>Browse Courses</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -210,7 +209,7 @@ export default function CoursePlayer() {
           </Link>
           <div className="h-5 w-px bg-border hidden sm:block" />
           <h1 className="text-sm font-medium text-foreground truncate max-w-[200px] sm:max-w-none">
-            {mockCourse.title}
+            {course.title}
           </h1>
         </div>
         <div className="flex items-center gap-4">
@@ -246,9 +245,12 @@ export default function CoursePlayer() {
               {/* Modules List */}
               <ScrollArea className="flex-1">
                 <div className="p-2">
-                  {mockCourse.modules.map((module, moduleIndex) => {
-                    const moduleCompleted = module.lessons.every((l) => l.completed);
-                    const moduleLessonsCompleted = module.lessons.filter((l) => l.completed).length;
+                  {course.modules?.map((module, moduleIndex) => {
+                    const moduleLessons = module.lessons || [];
+                    const moduleLessonsCompleted = moduleLessons.filter(
+                      (l) => progressMap.get(l.id)?.completed
+                    ).length;
+                    const moduleCompleted = moduleLessonsCompleted === moduleLessons.length && moduleLessons.length > 0;
 
                     return (
                       <Collapsible
@@ -277,7 +279,7 @@ export default function CoursePlayer() {
                                 {module.title}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                {moduleLessonsCompleted}/{module.lessons.length} completed
+                                {moduleLessonsCompleted}/{moduleLessons.length} completed
                               </p>
                             </div>
                             <ChevronDown
@@ -290,9 +292,10 @@ export default function CoursePlayer() {
                         </CollapsibleTrigger>
                         <CollapsibleContent>
                           <div className="ml-4 border-l border-border pl-4 py-1">
-                            {module.lessons.map((lesson) => {
+                            {moduleLessons.map((lesson) => {
                               const Icon = getLessonIcon(lesson.type);
                               const isActive = lesson.id === currentLesson?.id;
+                              const isCompleted = progressMap.get(lesson.id)?.completed;
 
                               return (
                                 <button
@@ -306,7 +309,7 @@ export default function CoursePlayer() {
                                   )}
                                 >
                                   <div className="mt-0.5">
-                                    {lesson.completed ? (
+                                    {isCompleted ? (
                                       <CheckCircle2 className="h-4 w-4 text-accent" />
                                     ) : (
                                       <Icon
@@ -330,10 +333,12 @@ export default function CoursePlayer() {
                                       <Badge variant="outline" className="text-[10px] px-1.5 py-0">
                                         {lesson.type}
                                       </Badge>
-                                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                        <Clock className="h-3 w-3" />
-                                        {lesson.duration}
-                                      </span>
+                                      {lesson.duration && (
+                                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                          <Clock className="h-3 w-3" />
+                                          {lesson.duration}
+                                        </span>
+                                      )}
                                     </div>
                                   </div>
                                 </button>
@@ -366,193 +371,143 @@ export default function CoursePlayer() {
         {/* Main Content Area */}
         <main className="flex-1 overflow-auto">
           <div className="max-w-5xl mx-auto">
-            {/* Video Player */}
+            {/* Content based on lesson type */}
             <div className="aspect-video bg-black relative">
-              {currentLesson?.type === "video" && currentLesson?.videoUrl ? (
-                <ReactPlayer
-                  src={currentLesson.videoUrl}
-                  width="100%"
-                  height="100%"
-                  playing={playing}
-                  volume={volume}
-                  muted={muted}
-                  onPlay={() => setPlaying(true)}
-                  onPause={() => setPlaying(false)}
-                  onTimeUpdate={(e) => {
-                    const video = e.currentTarget;
-                    if (video.duration) {
-                      setPlayed(video.currentTime / video.duration);
-                    }
-                  }}
-                  onEnded={() => {
-                    setPlaying(false);
-                    // Auto-advance to next lesson when video ends
-                    if (nextLesson) {
-                      navigateToLesson(nextLesson.id);
-                    }
-                  }}
-                  controls
-                />
-              ) : currentLesson?.type === "quiz" ? (
-                <div className="bg-muted/30">
-                  <Quiz
-                    questions={mockQuizzes[currentLesson.id] || []}
-                    title={currentLesson.title}
-                    onComplete={(score, total) => {
-                      console.log(`Quiz completed: ${score}/${total}`);
-                      // TODO: Save progress to database
+              {currentLesson?.type === "video" ? (
+                getVideoUrl() ? (
+                  <video
+                    src={getVideoUrl()!}
+                    className="w-full h-full"
+                    controls
+                    autoPlay={playing}
+                    onPlay={() => setPlaying(true)}
+                    onPause={() => setPlaying(false)}
+                    onTimeUpdate={(e) => {
+                      const video = e.currentTarget;
+                      if (video.duration) {
+                        setPlayed(video.currentTime / video.duration);
+                      }
                     }}
+                    onEnded={() => {
+                      setPlaying(false);
+                      handleLessonComplete();
+                      if (nextLesson) {
+                        navigateToLesson(nextLesson.id);
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
+                    <div className="text-center">
+                      <Play className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">Video content not available</p>
+                      <Button 
+                        variant="outline" 
+                        className="mt-4"
+                        onClick={handleLessonComplete}
+                        disabled={updateProgressMutation.isPending}
+                      >
+                        {updateProgressMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        ) : (
+                          <CheckCircle2 className="h-4 w-4 mr-2" />
+                        )}
+                        Mark as Complete
+                      </Button>
+                    </div>
+                  </div>
+                )
+              ) : currentLesson?.type === "quiz" ? (
+                <div className="bg-muted/30 min-h-full">
+                  <Quiz
+                    questions={getQuizQuestions()}
+                    title={currentLesson.title}
+                    onComplete={handleQuizComplete}
                   />
                 </div>
               ) : (
-                <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
-                  <div className="text-center">
-                    <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                      <FileText className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                    <p className="text-muted-foreground text-sm">
-                      Assignment content will appear here
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
+                  <div className="text-center max-w-lg px-4">
+                    <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h2 className="text-xl font-bold text-foreground mb-2">
+                      {currentLesson?.title || "Assignment"}
+                    </h2>
+                    <p className="text-muted-foreground mb-6">
+                      Complete this assignment to continue with the course.
                     </p>
+                    <Button 
+                      variant="accent"
+                      onClick={handleLessonComplete}
+                      disabled={updateProgressMutation.isPending}
+                    >
+                      {updateProgressMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : (
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                      )}
+                      Mark as Complete
+                    </Button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Lesson Content */}
-            <div className="p-6 md:p-8">
-              {/* Lesson Header */}
-              <div className="mb-6">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                  <span>{currentLesson?.moduleTitle}</span>
-                  <ChevronRight className="h-4 w-4" />
-                  <span>Lesson {currentLessonIndex + 1}</span>
+            {/* Lesson Info & Navigation */}
+            <div className="p-6 border-b border-border">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">
+                    {currentLesson?.moduleTitle}
+                  </p>
+                  <h2 className="text-xl font-bold text-foreground">
+                    {currentLesson?.title || "Select a lesson"}
+                  </h2>
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-                  {currentLesson?.title}
-                </h1>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Badge variant="outline" className="capitalize">
-                    {currentLesson?.type}
-                  </Badge>
-                  <span className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    {currentLesson?.duration}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="mark-complete"
-                      checked={currentLesson?.completed}
-                      className="border-accent data-[state=checked]:bg-accent"
-                    />
-                    <label
-                      htmlFor="mark-complete"
-                      className="text-sm text-muted-foreground cursor-pointer"
-                    >
-                      Mark as complete
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Lesson Description */}
-              <div className="prose prose-sm max-w-none mb-8">
-                <p className="text-muted-foreground leading-relaxed">
-                  In this lesson, you'll learn the fundamentals of working with Polars DataFrames.
-                  We'll cover how to create DataFrames from various sources, explore their structure,
-                  and perform basic operations. By the end, you'll have a solid foundation for
-                  data manipulation with Polars.
-                </p>
-              </div>
-
-              {/* Resources */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Resources</h3>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <button className="flex items-center gap-3 p-4 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors text-left">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Download className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">Jupyter Notebook</p>
-                      <p className="text-sm text-muted-foreground">lesson-03-dataframes.ipynb</p>
-                    </div>
-                  </button>
-                  <button className="flex items-center gap-3 p-4 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors text-left">
-                    <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                      <FileText className="h-5 w-5 text-accent" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">Lesson Slides</p>
-                      <p className="text-sm text-muted-foreground">slides-03.pdf</p>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Code Snippet Example */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Code Example</h3>
-                <div className="rounded-lg bg-[hsl(var(--primary)/0.05)] border border-border overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/30">
-                    <span className="text-sm font-medium text-muted-foreground">Python</span>
-                    <Button variant="ghost" size="sm" className="h-7 text-xs">
-                      Copy
-                    </Button>
-                  </div>
-                  <pre className="p-4 overflow-x-auto text-sm">
-                    <code className="text-foreground">{`import polars as pl
-
-# Create a DataFrame from a dictionary
-df = pl.DataFrame({
-    "name": ["Alice", "Bob", "Charlie"],
-    "age": [25, 30, 35],
-    "city": ["New York", "London", "Paris"]
-})
-
-# Display the DataFrame
-print(df)
-
-# Basic operations
-print(f"Shape: {df.shape}")
-print(f"Columns: {df.columns}")
-print(f"Schema: {df.schema}")`}</code>
-                  </pre>
-                </div>
-              </div>
-
-              {/* Navigation */}
-              <div className="flex items-center justify-between pt-6 border-t border-border">
-                {prevLesson ? (
+                <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
-                    onClick={() => navigateToLesson(prevLesson.id)}
-                    className="flex items-center gap-2"
+                    size="sm"
+                    disabled={!prevLesson}
+                    onClick={() => prevLesson && navigateToLesson(prevLesson.id)}
                   >
                     <ChevronLeft className="h-4 w-4" />
-                    <span className="hidden sm:inline">Previous:</span>
-                    <span className="truncate max-w-[150px]">{prevLesson.title}</span>
+                    Previous
                   </Button>
-                ) : (
-                  <div />
-                )}
-                {nextLesson ? (
                   <Button
-                    variant="accent"
-                    onClick={() => navigateToLesson(nextLesson.id)}
-                    className="flex items-center gap-2"
+                    variant="outline"
+                    size="sm"
+                    disabled={!nextLesson}
+                    onClick={() => nextLesson && navigateToLesson(nextLesson.id)}
                   >
-                    <span className="hidden sm:inline">Next:</span>
-                    <span className="truncate max-w-[150px]">{nextLesson.title}</span>
+                    Next
                     <ChevronRight className="h-4 w-4" />
                   </Button>
-                ) : (
-                  <Button variant="accent" className="flex items-center gap-2">
-                    Complete Course
-                    <CheckCircle2 className="h-4 w-4" />
-                  </Button>
-                )}
+                </div>
               </div>
             </div>
+
+            {/* Lesson Description */}
+            {currentLesson && (
+              <div className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <Badge variant="outline" className="capitalize">
+                    {currentLesson.type}
+                  </Badge>
+                  {currentLesson.duration && (
+                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      {currentLesson.duration}
+                    </span>
+                  )}
+                  {progressMap.get(currentLesson.id)?.completed && (
+                    <Badge variant="completed">
+                      <CheckCircle2 className="h-3 w-3 mr-1" />
+                      Completed
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </main>
       </div>

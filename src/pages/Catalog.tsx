@@ -1,96 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CourseCard } from "@/components/courses/CourseCard";
-import { Search, SlidersHorizontal, X } from "lucide-react";
-
-// Sample courses data
-const allCourses = [
-  {
-    id: "polars-fundamentals",
-    title: "Python Polars Fundamentals",
-    description: "Master the basics of Polars DataFrame library. Learn data manipulation, filtering, and aggregation with blazing-fast performance.",
-    instructor: "Sarah Chen",
-    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=340&fit=crop",
-    duration: "8 hours",
-    lessonsCount: 42,
-    level: "beginner" as const,
-    rating: 4.9,
-    studentsCount: 12500,
-    isNew: true,
-    tags: ["fundamentals", "dataframes", "basics"],
-  },
-  {
-    id: "polars-advanced",
-    title: "Advanced Polars Techniques",
-    description: "Deep dive into lazy evaluation, window functions, and complex data transformations for production data pipelines.",
-    instructor: "Marcus Johnson",
-    thumbnail: "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=600&h=340&fit=crop",
-    duration: "12 hours",
-    lessonsCount: 56,
-    level: "advanced" as const,
-    rating: 4.8,
-    studentsCount: 8200,
-    tags: ["advanced", "lazy evaluation", "optimization"],
-  },
-  {
-    id: "polars-data-engineering",
-    title: "Data Engineering with Polars",
-    description: "Build scalable ETL pipelines using Polars. Integrate with databases, cloud storage, and streaming data sources.",
-    instructor: "Emma Rodriguez",
-    thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=340&fit=crop",
-    duration: "15 hours",
-    lessonsCount: 68,
-    level: "intermediate" as const,
-    rating: 4.7,
-    studentsCount: 5800,
-    tags: ["data engineering", "ETL", "pipelines"],
-  },
-  {
-    id: "polars-sql",
-    title: "SQL to Polars Migration",
-    description: "Transition your SQL skills to Polars. Learn equivalent operations and when to choose Polars over traditional SQL.",
-    instructor: "Sarah Chen",
-    thumbnail: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=600&h=340&fit=crop",
-    duration: "6 hours",
-    lessonsCount: 32,
-    level: "beginner" as const,
-    rating: 4.6,
-    studentsCount: 4200,
-    tags: ["SQL", "migration", "basics"],
-  },
-  {
-    id: "polars-performance",
-    title: "Polars Performance Optimization",
-    description: "Master performance tuning techniques. Learn memory management, parallel processing, and benchmarking strategies.",
-    instructor: "Marcus Johnson",
-    thumbnail: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600&h=340&fit=crop",
-    duration: "10 hours",
-    lessonsCount: 45,
-    level: "advanced" as const,
-    rating: 4.9,
-    studentsCount: 3100,
-    isNew: true,
-    tags: ["performance", "optimization", "memory"],
-  },
-  {
-    id: "polars-pandas-comparison",
-    title: "From Pandas to Polars",
-    description: "A comprehensive guide for pandas users transitioning to Polars. Compare syntax, performance, and best practices.",
-    instructor: "Emma Rodriguez",
-    thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=340&fit=crop",
-    duration: "4 hours",
-    lessonsCount: 24,
-    level: "beginner" as const,
-    rating: 4.7,
-    studentsCount: 9800,
-    tags: ["pandas", "migration", "comparison"],
-  },
-];
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCourses } from "@/hooks/use-courses";
+import { Search, SlidersHorizontal, X, BookOpen } from "lucide-react";
 
 const levels = ["All Levels", "beginner", "intermediate", "advanced"];
 const durations = ["All Durations", "0-5 hours", "5-10 hours", "10+ hours"];
@@ -101,16 +18,24 @@ export default function Catalog() {
   const [selectedDuration, setSelectedDuration] = useState("All Durations");
   const [showFilters, setShowFilters] = useState(false);
 
-  const filteredCourses = allCourses.filter((course) => {
+  const { data: courses, isLoading, error } = useCourses();
+
+  // Calculate duration in hours from lessons
+  const getCourseDuration = (course: NonNullable<typeof courses>[0]) => {
+    // For now, return a placeholder - this would need lesson duration data
+    return 8; // Default to 8 hours
+  };
+
+  const filteredCourses = (courses || []).filter((course) => {
     const matchesSearch =
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.instructor.toLowerCase().includes(searchQuery.toLowerCase());
+      (course.description?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (course.instructor?.full_name?.toLowerCase() || "").includes(searchQuery.toLowerCase());
 
-    const matchesLevel =
-      selectedLevel === "All Levels" || course.level === selectedLevel;
+    // Level filtering would need to be added to the course schema
+    const matchesLevel = selectedLevel === "All Levels";
 
-    const hours = parseInt(course.duration);
+    const hours = getCourseDuration(course);
     const matchesDuration =
       selectedDuration === "All Durations" ||
       (selectedDuration === "0-5 hours" && hours <= 5) ||
@@ -141,8 +66,8 @@ export default function Catalog() {
               Course Catalog
             </h1>
             <p className="mt-4 text-muted-foreground">
-              Explore our comprehensive collection of Python Polars courses. 
-              From beginner fundamentals to advanced data engineering.
+              Explore our comprehensive collection of courses. 
+              From beginner fundamentals to advanced techniques.
             </p>
 
             {/* Search */}
@@ -184,7 +109,7 @@ export default function Catalog() {
             </div>
 
             <p className="text-sm text-muted-foreground">
-              {filteredCourses.length} course{filteredCourses.length !== 1 && "s"} found
+              {isLoading ? "Loading..." : `${filteredCourses.length} course${filteredCourses.length !== 1 ? "s" : ""} found`}
             </p>
           </div>
 
@@ -260,21 +185,76 @@ export default function Catalog() {
             </div>
           )}
 
-          {/* Course Grid */}
-          {filteredCourses.length > 0 ? (
+          {/* Loading State */}
+          {isLoading && (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredCourses.map((course) => (
-                <CourseCard key={course.id} {...course} />
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="rounded-xl border border-border bg-card overflow-hidden">
+                  <Skeleton className="aspect-video w-full" />
+                  <div className="p-4 space-y-3">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <div className="flex justify-between pt-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
-          ) : (
+          )}
+
+          {/* Error State */}
+          {error && (
             <div className="py-20 text-center">
-              <p className="text-lg text-muted-foreground">
-                No courses found matching your criteria.
+              <p className="text-lg text-destructive">
+                Failed to load courses. Please try again.
               </p>
-              <Button variant="outline" className="mt-4" onClick={clearFilters}>
-                Clear Filters
-              </Button>
+            </div>
+          )}
+
+          {/* Course Grid */}
+          {!isLoading && !error && filteredCourses.length > 0 && (
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  id={course.slug}
+                  title={course.title}
+                  description={course.description || ""}
+                  instructor={course.instructor?.full_name || "Unknown Instructor"}
+                  thumbnail={course.thumbnail_url || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=340&fit=crop"}
+                  duration={`${getCourseDuration(course)} hours`}
+                  lessonsCount={course.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0}
+                  level="beginner"
+                  rating={4.5}
+                  studentsCount={0}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!isLoading && !error && filteredCourses.length === 0 && (
+            <div className="py-20 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <BookOpen className="h-8 w-8 text-muted-foreground" />
+              </div>
+              {hasActiveFilters ? (
+                <>
+                  <p className="text-lg text-muted-foreground">
+                    No courses found matching your criteria.
+                  </p>
+                  <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                    Clear Filters
+                  </Button>
+                </>
+              ) : (
+                <p className="text-lg text-muted-foreground">
+                  No courses available yet. Check back soon!
+                </p>
+              )}
             </div>
           )}
         </div>
