@@ -10,6 +10,8 @@ import CoursePlayer from "./pages/CoursePlayer";
 import Dashboard from "./pages/Dashboard";
 import Catalog from "./pages/Catalog";
 import AuthPage from "./pages/Auth";
+import InstructorDashboard from "./pages/InstructorDashboard";
+import CourseEditor from "./pages/CourseEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,9 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/courses" element={<Catalog />} />
+            <Route path="/instructor" element={<InstructorDashboard />} />
+            <Route path="/instructor/courses/:courseId/edit" element={<CourseEditor />} />
+            <Route path="/instructor/courses/new" element={<CourseEditor />} />
             <Route path="/login" element={<AuthPage mode="login" />} />
             <Route path="/signup" element={<AuthPage mode="signup" />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
