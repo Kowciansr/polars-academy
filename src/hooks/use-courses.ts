@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Tables, TablesInsert } from "@/integrations/supabase/types";
+import type { Tables } from "@/integrations/supabase/types";
 
 export type Course = Tables<"courses"> & {
   instructor?: Tables<"profiles">;
@@ -214,9 +215,39 @@ export function useEnroll() {
   });
 }
 
-// Fetch lesson progress for a course
+// Fetch lesson progress for a course with real-time updates
 export function useLessonProgress(courseId: string | undefined) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  // Subscribe to real-time updates for this user's lesson progress
+  useEffect(() => {
+    if (!user || !courseId) return;
+
+    const channel = supabase
+      .channel(`lesson_progress_${user.id}_${courseId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "lesson_progress",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // Invalidate the query to refetch updated data
+          queryClient.invalidateQueries({
+            queryKey: ["lesson-progress", user.id, courseId],
+          });
+          queryClient.invalidateQueries({ queryKey: ["enrollments"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, courseId, queryClient]);
 
   return useQuery({
     queryKey: ["lesson-progress", user?.id, courseId],
