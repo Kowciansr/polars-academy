@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, PlayCircle, FileText, HelpCircle, CheckCircle2, Lock } from "lucide-react";
+import { ChevronDown, BookOpen, FileText, HelpCircle, CheckCircle2, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -7,7 +7,7 @@ export interface Lesson {
   id: string;
   title: string;
   duration: string;
-  type: "video" | "quiz" | "assignment";
+  type: "reading" | "quiz" | "assignment";
   isCompleted?: boolean;
   isLocked?: boolean;
 }
@@ -21,7 +21,7 @@ export interface SyllabusModuleProps {
 }
 
 const lessonIcons = {
-  video: PlayCircle,
+  reading: BookOpen,
   quiz: HelpCircle,
   assignment: FileText,
 };
@@ -107,8 +107,8 @@ export function SyllabusModule({
                   </p>
                 </div>
 
-                <Badge variant={lesson.type} className="hidden sm:flex">
-                  {lesson.type}
+                <Badge variant="outline" className="hidden sm:flex capitalize">
+                  {lesson.type === "assignment" ? "Lab" : lesson.type}
                 </Badge>
                 
                 <span className="text-sm text-muted-foreground">

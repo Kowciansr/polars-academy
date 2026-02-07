@@ -269,7 +269,7 @@ export function useCreateLesson() {
     mutationFn: async (data: {
       moduleId: string;
       title: string;
-      type: "video" | "quiz" | "assignment";
+      type: "reading" | "quiz" | "assignment";
       duration?: string;
       content?: Json;
       orderIndex: number;
@@ -308,7 +308,7 @@ export function useUpdateLesson() {
       lessonId: string;
       data: {
         title?: string;
-        type?: "video" | "quiz" | "assignment";
+        type?: "reading" | "quiz" | "assignment";
         duration?: string;
         content?: Json;
         orderIndex?: number;

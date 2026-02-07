@@ -16,14 +16,13 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Play,
+  BookOpen,
   FileText,
   HelpCircle,
   CheckCircle2,
   Clock,
   Menu,
   X,
-  BookOpen,
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,8 +31,8 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const getLessonIcon = (type: string) => {
   switch (type) {
-    case "video":
-      return Play;
+    case "reading":
+      return BookOpen;
     case "quiz":
       return HelpCircle;
     case "assignment":
@@ -50,8 +49,6 @@ export default function CoursePlayer() {
   
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [openModules, setOpenModules] = useState<string[]>([]);
-  const [playing, setPlaying] = useState(false);
-  const [played, setPlayed] = useState(0);
 
   const { data: course, isLoading: courseLoading } = useCourse(courseId);
   const { data: lessonProgress, isLoading: progressLoading } = useLessonProgress(course?.id);
@@ -132,20 +129,11 @@ export default function CoursePlayer() {
     }
   };
 
-  // Get quiz questions from lesson content
-  const getQuizQuestions = (): QuizQuestion[] => {
-    if (!currentLesson?.content) return [];
-    
-    const content = currentLesson.content as { questions?: QuizQuestion[] };
-    return content.questions || [];
-  };
-
-  // Get video URL from lesson content
-  const getVideoUrl = (): string | null => {
-    if (!currentLesson?.content) return null;
-    
-    const content = currentLesson.content as { videoUrl?: string };
-    return content.videoUrl || null;
+  // Get reading content from lesson
+  const getReadingContent = (): string => {
+    if (!currentLesson?.content) return "";
+    const content = currentLesson.content as { body?: string };
+    return content.body || "";
   };
 
   // Loading state
@@ -372,80 +360,70 @@ export default function CoursePlayer() {
         <main className="flex-1 overflow-auto">
           <div className="max-w-5xl mx-auto">
             {/* Content based on lesson type */}
-            <div className="aspect-video bg-black relative">
-              {currentLesson?.type === "video" ? (
-                getVideoUrl() ? (
-                  <video
-                    src={getVideoUrl()!}
-                    className="w-full h-full"
-                    controls
-                    autoPlay={playing}
-                    onPlay={() => setPlaying(true)}
-                    onPause={() => setPlaying(false)}
-                    onTimeUpdate={(e) => {
-                      const video = e.currentTarget;
-                      if (video.duration) {
-                        setPlayed(video.currentTime / video.duration);
-                      }
-                    }}
-                    onEnded={() => {
-                      setPlaying(false);
-                      handleLessonComplete();
-                      if (nextLesson) {
-                        navigateToLesson(nextLesson.id);
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
-                    <div className="text-center">
-                      <Play className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">Video content not available</p>
-                      <Button 
-                        variant="outline" 
-                        className="mt-4"
-                        onClick={handleLessonComplete}
-                        disabled={updateProgressMutation.isPending}
-                      >
-                        {updateProgressMutation.isPending ? (
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        ) : (
-                          <CheckCircle2 className="h-4 w-4 mr-2" />
-                        )}
-                        Mark as Complete
-                      </Button>
-                    </div>
+            <div className="bg-card border-b border-border">
+              {currentLesson?.type === "reading" ? (
+                <div className="max-w-3xl mx-auto p-8">
+                  <div className="flex items-center gap-2 mb-6">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                    <span className="text-sm font-medium text-primary">Reading</span>
                   </div>
-                )
-              ) : currentLesson?.type === "quiz" ? (
-                <div className="bg-muted/30 min-h-full">
-                  <Quiz
-                    questions={getQuizQuestions()}
-                    title={currentLesson.title}
-                    onComplete={handleQuizComplete}
-                  />
-                </div>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
-                  <div className="text-center max-w-lg px-4">
-                    <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <h2 className="text-xl font-bold text-foreground mb-2">
-                      {currentLesson?.title || "Assignment"}
-                    </h2>
-                    <p className="text-muted-foreground mb-6">
-                      Complete this assignment to continue with the course.
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <p className="text-foreground leading-relaxed text-base whitespace-pre-wrap">
+                      {getReadingContent() || "No content available for this lesson."}
                     </p>
-                    <Button 
-                      variant="accent"
+                  </div>
+                  <div className="mt-8 pt-6 border-t border-border flex justify-end">
+                    <Button
                       onClick={handleLessonComplete}
-                      disabled={updateProgressMutation.isPending}
+                      disabled={updateProgressMutation.isPending || !!progressMap.get(currentLesson.id)?.completed}
                     >
                       {updateProgressMutation.isPending ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : (
                         <CheckCircle2 className="h-4 w-4 mr-2" />
                       )}
-                      Mark as Complete
+                      {progressMap.get(currentLesson.id)?.completed ? "Completed" : "Mark as Complete"}
+                    </Button>
+                  </div>
+                </div>
+              ) : currentLesson?.type === "quiz" ? (
+                <div className="p-6">
+                  <Quiz
+                    questions={(() => {
+                      if (!currentLesson?.content) return [];
+                      const content = currentLesson.content as { questions?: QuizQuestion[] };
+                      return content.questions || [];
+                    })()}
+                    title={currentLesson.title}
+                    onComplete={handleQuizComplete}
+                  />
+                </div>
+              ) : (
+                <div className="max-w-3xl mx-auto p-8">
+                  <div className="flex items-center gap-2 mb-6">
+                    <FileText className="h-5 w-5 text-accent" />
+                    <span className="text-sm font-medium text-accent">Lab / Assignment</span>
+                  </div>
+                  <h2 className="text-xl font-bold text-foreground mb-4">
+                    {currentLesson?.title || "Assignment"}
+                  </h2>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <p className="text-foreground leading-relaxed text-base whitespace-pre-wrap">
+                      {getReadingContent() || "Complete this assignment to continue with the course."}
+                    </p>
+                  </div>
+                  <div className="mt-8 pt-6 border-t border-border flex justify-end">
+                    <Button
+                      variant="accent"
+                      onClick={handleLessonComplete}
+                      disabled={updateProgressMutation.isPending || !!progressMap.get(currentLesson?.id || "")?.completed}
+                    >
+                      {updateProgressMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : (
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                      )}
+                      {progressMap.get(currentLesson?.id || "")?.completed ? "Completed" : "Mark as Complete"}
                     </Button>
                   </div>
                 </div>

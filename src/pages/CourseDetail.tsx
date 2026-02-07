@@ -138,7 +138,7 @@ export default function CourseDetail() {
       id: lesson.id,
       title: lesson.title,
       duration: lesson.duration || "5 min",
-      type: lesson.type as "video" | "quiz" | "assignment",
+      type: lesson.type as "reading" | "quiz" | "assignment",
       isCompleted: progressMap.get(lesson.id)?.completed || false,
     })) || [],
   })) || [];

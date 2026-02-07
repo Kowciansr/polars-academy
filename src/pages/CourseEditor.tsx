@@ -35,12 +35,18 @@ import {
   Trash2,
   ChevronDown,
   GripVertical,
-  Play,
+  BookOpen,
   FileText,
   HelpCircle,
   Save,
   Loader2,
 } from "lucide-react";
+
+const lessonTypeIcons = {
+  reading: BookOpen,
+  quiz: HelpCircle,
+  assignment: FileText,
+};
 import { useAuth } from "@/contexts/AuthContext";
 import {
   useInstructorCourses,
@@ -59,11 +65,6 @@ import { Footer } from "@/components/layout/Footer";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const lessonTypeIcons = {
-  video: Play,
-  quiz: HelpCircle,
-  assignment: FileText,
-};
 
 export default function CourseEditor() {
   const { courseId } = useParams();
@@ -231,7 +232,7 @@ export default function CourseEditor() {
       await createLessonMutation.mutateAsync({
         moduleId,
         title: `Lesson ${lessonsCount + 1}`,
-        type: "video",
+        type: "reading",
         orderIndex: lessonsCount,
       });
       toast.success("Lesson added!");
@@ -242,7 +243,7 @@ export default function CourseEditor() {
 
   const handleUpdateLesson = async (
     lessonId: string,
-    data: { title?: string; type?: "video" | "quiz" | "assignment"; duration?: string }
+    data: { title?: string; type?: "reading" | "quiz" | "assignment"; duration?: string }
   ) => {
     try {
       await updateLessonMutation.mutateAsync({
@@ -486,7 +487,7 @@ export default function CourseEditor() {
                                         />
                                         <Select
                                           value={lesson.type}
-                                          onValueChange={(value: "video" | "quiz" | "assignment") =>
+                                          onValueChange={(value: "reading" | "quiz" | "assignment") =>
                                             handleUpdateLesson(lesson.id, { type: value })
                                           }
                                         >
@@ -494,9 +495,9 @@ export default function CourseEditor() {
                                             <SelectValue />
                                           </SelectTrigger>
                                           <SelectContent>
-                                            <SelectItem value="video">Video</SelectItem>
+                                            <SelectItem value="reading">Reading</SelectItem>
                                             <SelectItem value="quiz">Quiz</SelectItem>
-                                            <SelectItem value="assignment">Assignment</SelectItem>
+                                            <SelectItem value="assignment">Lab</SelectItem>
                                           </SelectContent>
                                         </Select>
                                         <Input
