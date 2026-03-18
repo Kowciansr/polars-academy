@@ -356,32 +356,7 @@ export default function CoursePlayer() {
           <div className="max-w-5xl mx-auto">
             {/* Content based on lesson type */}
             <div className="bg-card border-b border-border">
-              {currentLesson?.type === "reading" ? (
-                <div className="max-w-3xl mx-auto p-8">
-                  <div className="flex items-center gap-2 mb-6">
-                    <BookOpen className="h-5 w-5 text-primary" />
-                    <span className="text-sm font-medium text-primary">Reading</span>
-                  </div>
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <p className="text-foreground leading-relaxed text-base whitespace-pre-wrap">
-                      {getReadingContent() || "No content available for this lesson."}
-                    </p>
-                  </div>
-                  <div className="mt-8 pt-6 border-t border-border flex justify-end">
-                    <Button
-                      onClick={handleLessonComplete}
-                      disabled={updateProgressMutation.isPending || !!progressMap.get(currentLesson.id)?.completed}
-                    >
-                      {updateProgressMutation.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : (
-                        <CheckCircle2 className="h-4 w-4 mr-2" />
-                      )}
-                      {progressMap.get(currentLesson.id)?.completed ? "Completed" : "Mark as Complete"}
-                    </Button>
-                  </div>
-                </div>
-              ) : currentLesson?.type === "quiz" ? (
+              {currentLesson?.type === "quiz" ? (
                 <div className="p-6">
                   <Quiz
                     questions={(() => {
@@ -393,35 +368,15 @@ export default function CoursePlayer() {
                     onComplete={handleQuizComplete}
                   />
                 </div>
+              ) : currentLesson ? (
+                <LessonContent
+                  lesson={currentLesson}
+                  isCompleted={!!progressMap.get(currentLesson.id)?.completed}
+                  isPending={updateProgressMutation.isPending}
+                  onComplete={handleLessonComplete}
+                />
               ) : (
-                <div className="max-w-3xl mx-auto p-8">
-                  <div className="flex items-center gap-2 mb-6">
-                    <FileText className="h-5 w-5 text-accent" />
-                    <span className="text-sm font-medium text-accent">Lab / Assignment</span>
-                  </div>
-                  <h2 className="text-xl font-bold text-foreground mb-4">
-                    {currentLesson?.title || "Assignment"}
-                  </h2>
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <p className="text-foreground leading-relaxed text-base whitespace-pre-wrap">
-                      {getReadingContent() || "Complete this assignment to continue with the course."}
-                    </p>
-                  </div>
-                  <div className="mt-8 pt-6 border-t border-border flex justify-end">
-                    <Button
-                      variant="accent"
-                      onClick={handleLessonComplete}
-                      disabled={updateProgressMutation.isPending || !!progressMap.get(currentLesson?.id || "")?.completed}
-                    >
-                      {updateProgressMutation.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : (
-                        <CheckCircle2 className="h-4 w-4 mr-2" />
-                      )}
-                      {progressMap.get(currentLesson?.id || "")?.completed ? "Completed" : "Mark as Complete"}
-                    </Button>
-                  </div>
-                </div>
+                <div className="p-8 text-center text-muted-foreground">Select a lesson to begin.</div>
               )}
             </div>
 
