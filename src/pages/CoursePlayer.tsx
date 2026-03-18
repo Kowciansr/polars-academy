@@ -130,12 +130,6 @@ export default function CoursePlayer() {
     }
   };
 
-  // Get reading content from lesson
-  const getReadingContent = (): string => {
-    if (!currentLesson?.content) return "";
-    const content = currentLesson.content as { body?: string };
-    return content.body || "";
-  };
 
   // Loading state
   if (courseLoading || progressLoading) {
