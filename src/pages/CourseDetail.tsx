@@ -35,30 +35,7 @@ export default function CourseDetail() {
   const enrollMutation = useEnroll();
 
   const handleStartLearning = async () => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
     if (!course) return;
-
-    // If not enrolled, enroll first
-    if (!isEnrolled) {
-      try {
-        await enrollMutation.mutateAsync(course.id);
-        toast({
-          title: "Enrolled successfully!",
-          description: "You can now start learning.",
-        });
-      } catch (error) {
-        toast({
-          title: "Enrollment failed",
-          description: "Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
 
     // Navigate to the first lesson
     const firstLesson = course.modules?.[0]?.lessons?.[0];
