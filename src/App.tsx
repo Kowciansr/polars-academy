@@ -9,7 +9,7 @@ import CourseDetail from "./pages/CourseDetail";
 import CoursePlayer from "./pages/CoursePlayer";
 import Dashboard from "./pages/Dashboard";
 import Catalog from "./pages/Catalog";
-import AuthPage from "./pages/Auth";
+
 import InstructorDashboard from "./pages/InstructorDashboard";
 import CourseEditor from "./pages/CourseEditor";
 import NotFound from "./pages/NotFound";
