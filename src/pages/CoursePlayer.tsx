@@ -84,12 +84,6 @@ export default function CoursePlayer() {
     }
   }, [currentLesson?.moduleId]);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!user && !courseLoading) {
-      navigate("/login");
-    }
-  }, [user, courseLoading, navigate]);
 
   const toggleModule = (moduleId: string) => {
     setOpenModules((prev) =>
