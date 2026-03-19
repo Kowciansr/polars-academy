@@ -34,8 +34,6 @@ const App = () => (
             <Route path="/instructor" element={<InstructorDashboard />} />
             <Route path="/instructor/courses/:courseId/edit" element={<CourseEditor />} />
             <Route path="/instructor/courses/new" element={<CourseEditor />} />
-            <Route path="/login" element={<AuthPage mode="login" />} />
-            <Route path="/signup" element={<AuthPage mode="signup" />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
