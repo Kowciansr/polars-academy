@@ -110,26 +110,11 @@ export default function InstructorDashboard() {
               <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
                 <GraduationCap className="h-8 w-8 text-primary" />
               </div>
-              <CardTitle className="text-2xl">Become an Instructor</CardTitle>
+              <CardTitle className="text-2xl">Instructor Access Required</CardTitle>
               <CardDescription>
-                Share your knowledge with thousands of learners. Create courses, build your audience, and earn money.
+                Instructor access is managed by administrators. Please contact an admin to request instructor privileges.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Button
-                size="lg"
-                className="w-full"
-                onClick={handleBecomeInstructor}
-                disabled={becomeInstructorMutation.isPending}
-              >
-                {becomeInstructorMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : (
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                )}
-                Start Teaching Today
-              </Button>
-            </CardContent>
           </Card>
         </main>
         <Footer />
