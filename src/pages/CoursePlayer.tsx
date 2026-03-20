@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Quiz, type QuizQuestion } from "@/components/courses/Quiz";
+import { CertificateDialog } from "@/components/courses/CertificateDialog";
 import { LessonContent } from "@/components/courses/LessonContent";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
