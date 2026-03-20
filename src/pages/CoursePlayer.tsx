@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Quiz, type QuizQuestion } from "@/components/courses/Quiz";
+import { CertificateDialog } from "@/components/courses/CertificateDialog";
 import { LessonContent } from "@/components/courses/LessonContent";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -427,6 +428,22 @@ export default function CoursePlayer() {
                       Completed
                     </Badge>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Course Completion Certificate */}
+            {progressPercent === 100 && (
+              <div className="p-6 border-t border-border">
+                <div className="bg-accent/10 border border-accent/20 rounded-xl p-6 text-center space-y-3">
+                  <h3 className="text-lg font-bold text-foreground">🎉 Course Complete!</h3>
+                  <p className="text-sm text-muted-foreground">
+                    You've completed all lessons. Claim your certificate of completion.
+                  </p>
+                  <CertificateDialog
+                    courseTitle={course.title}
+                    completedDate={new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                  />
                 </div>
               </div>
             )}
