@@ -53,14 +53,6 @@ export default function InstructorDashboard() {
     return null;
   }
 
-  const handleBecomeInstructor = async () => {
-    try {
-      await becomeInstructorMutation.mutateAsync();
-      toast.success("You are now an instructor!");
-    } catch (error) {
-      toast.error("Failed to become an instructor");
-    }
-  };
 
   const handleDelete = async (courseId: string) => {
     setDeletingId(courseId);
