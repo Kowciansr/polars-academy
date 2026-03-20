@@ -291,19 +291,17 @@ export default function CourseDetail() {
               )}
 
               {/* Instructor */}
-              {course.instructor && (
-                <div>
-                  <h2 className="mb-6 text-2xl font-bold text-foreground">Your Instructor</h2>
-                  <InstructorCard
-                    name={course.instructor.full_name || "Unknown"}
-                    title={course.instructor.bio || "Instructor"}
-                    avatar={course.instructor.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop"}
-                    bio={course.instructor.bio || ""}
-                    coursesCount={1}
-                    studentsCount={0}
-                  />
-                </div>
-              )}
+              <div>
+                <h2 className="mb-6 text-2xl font-bold text-foreground">Your Instructional Designer</h2>
+                <InstructorCard
+                  name="Kowcika Asaithambi"
+                  title="Instructional Designer"
+                  avatar=""
+                  bio="Passionate about creating engaging, learner-centered educational experiences that make complex topics accessible and enjoyable."
+                  coursesCount={1}
+                  studentsCount={0}
+                />
+              </div>
             </div>
 
             {/* Sidebar */}
