@@ -32,7 +32,6 @@ import {
   useInstructorCourses,
   useIsInstructor,
   useDeleteCourse,
-  useDeleteCourse,
   useUpdateCourse,
 } from "@/hooks/use-instructor";
 import { Header } from "@/components/layout/Header";
@@ -44,7 +43,6 @@ export default function InstructorDashboard() {
   const navigate = useNavigate();
   const { data: isInstructor, isLoading: checkingRole } = useIsInstructor();
   const { data: courses, isLoading: loadingCourses } = useInstructorCourses();
-  const becomeInstructorMutation = useBecomeInstructor();
   const deleteMutation = useDeleteCourse();
   const updateMutation = useUpdateCourse();
 
