@@ -21,11 +21,17 @@ export function InstructorCard({
     <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-6 text-center sm:flex-row sm:items-start sm:text-left">
       {/* Avatar */}
       <div className="relative">
-        <img
-          src={avatar}
-          alt={name}
-          className="h-24 w-24 rounded-full object-cover ring-4 ring-primary/10"
-        />
+        {avatar ? (
+          <img
+            src={avatar}
+            alt={name}
+            className="h-24 w-24 rounded-full object-cover ring-4 ring-primary/10"
+          />
+        ) : (
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-2xl ring-4 ring-primary/10">
+            {name.split(" ").map(n => n[0]).join("")}
+          </div>
+        )}
         <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
           ★
         </div>
