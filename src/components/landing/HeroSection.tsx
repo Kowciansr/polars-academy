@@ -54,10 +54,10 @@ def greet(name):
                 </Link>
               </Button>
               <Button variant="heroOutline" size="xl" asChild>
-                <Link to="/catalog">
+                <a href="#curriculum">
                   View Syllabus
                   <ArrowRight className="h-5 w-5" />
-                </Link>
+                </a>
               </Button>
             </div>
 

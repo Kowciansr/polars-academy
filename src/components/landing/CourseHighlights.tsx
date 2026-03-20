@@ -33,7 +33,7 @@ const lessons = [
 
 export function CourseHighlights() {
   return (
-    <section className="py-20 bg-background">
+    <section id="curriculum" className="py-20 bg-background">
       <div className="container-wide">
         <div className="text-center mb-14">
           <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-2">Course Curriculum</p>

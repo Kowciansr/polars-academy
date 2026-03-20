@@ -1,41 +1,14 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Search, Menu, X, LogOut, User } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, profile, signOut, isLoading } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
-
-  const getInitials = (name: string | null | undefined) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container-wide flex h-16 items-center justify-between">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <span className="text-lg font-bold text-primary-foreground">P</span>
@@ -45,29 +18,12 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-6 md:flex">
-          <Link
-            to="/courses"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Courses
-          </Link>
-          <Link
-            to="/catalog"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Catalog
-          </Link>
-          <Link
-            to="/about"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            About
-          </Link>
+        <nav className="hidden items-center gap-4 md:flex">
+          <Button variant="default" size="sm" asChild>
+            <Link to="/course/python-zero-to-hero">Start Course</Link>
+          </Button>
         </nav>
 
-        {/* Mobile Menu Toggle */}
         <Button
           variant="ghost"
           size="icon"
@@ -78,31 +34,14 @@ export function Header() {
         </Button>
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="border-t border-border bg-background md:hidden">
           <nav className="container-wide flex flex-col gap-2 py-4">
-            <Link
-              to="/courses"
-              className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Courses
-            </Link>
-            <Link
-              to="/catalog"
-              className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Catalog
-            </Link>
-            <Link
-              to="/about"
-              className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              About
-            </Link>
+            <Button variant="default" size="sm" asChild>
+              <Link to="/course/python-zero-to-hero" onClick={() => setIsMobileMenuOpen(false)}>
+                Start Course
+              </Link>
+            </Button>
           </nav>
         </div>
       )}
