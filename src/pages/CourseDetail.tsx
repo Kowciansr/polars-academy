@@ -162,21 +162,17 @@ export default function CourseDetail() {
                 </div>
               </div>
 
-              {course.instructor && (
-                <div className="flex items-center gap-3">
-                  <img
-                    src={course.instructor.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop"}
-                    alt={course.instructor.full_name || "Instructor"}
-                    className="h-10 w-10 rounded-full object-cover ring-2 ring-primary-foreground/20"
-                  />
-                  <div>
-                    <p className="text-sm text-primary-foreground/70">Created by</p>
-                    <p className="font-medium text-primary-foreground">
-                      {course.instructor.full_name || "Unknown Instructor"}
-                    </p>
-                  </div>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-foreground/20 text-primary-foreground font-semibold text-sm ring-2 ring-primary-foreground/20">
+                  KA
                 </div>
-              )}
+                <div>
+                  <p className="text-sm text-primary-foreground/70">Instructional Designer</p>
+                  <p className="font-medium text-primary-foreground">
+                    Kowcika Asaithambi
+                  </p>
+                </div>
+              </div>
 
               <div className="flex flex-wrap items-center gap-6 text-sm text-primary-foreground/70">
                 <div className="flex items-center gap-1.5">
