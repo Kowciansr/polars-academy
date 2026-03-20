@@ -31,7 +31,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   useInstructorCourses,
   useIsInstructor,
-  useBecomeInstructor,
+  useDeleteCourse,
   useDeleteCourse,
   useUpdateCourse,
 } from "@/hooks/use-instructor";
