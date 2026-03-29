@@ -14,7 +14,6 @@ export function InstructorCard({
   avatar,
   bio,
   coursesCount,
-  studentsCount,
 }: InstructorCardProps) {
   return (
     <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-6 text-center sm:flex-row sm:items-start sm:text-left">
