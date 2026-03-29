@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Clock, BookOpen, Star, Users } from "lucide-react";
+import { Clock, BookOpen, Star } from "lucide-react";
 
 export interface CourseCardProps {
   id: string;
