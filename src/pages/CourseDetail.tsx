@@ -294,7 +294,6 @@ export default function CourseDetail() {
                   avatar=""
                   bio="Passionate about creating engaging, learner-centered educational experiences that make complex topics accessible and enjoyable."
                   coursesCount={1}
-                  studentsCount={0}
                 />
               </div>
             </div>

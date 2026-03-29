@@ -48,9 +48,6 @@ export function InstructorCard({
           <Badge variant="secondary">
             {coursesCount} Courses
           </Badge>
-          <Badge variant="secondary">
-            {studentsCount.toLocaleString()} Students
-          </Badge>
         </div>
       </div>
     </div>
