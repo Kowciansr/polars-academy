@@ -22,9 +22,10 @@ interface LessonContentProps {
 }
 
 export function LessonContent({ lesson, isCompleted, isPending, onComplete }: LessonContentProps) {
-  const content = lesson.content as { body?: string; code_snippets?: CodeSnippet[] } | null;
+  const content = lesson.content as { body?: string; code_snippets?: CodeSnippet[]; flashcards?: Flashcard[] } | null;
   const body = content?.body || "";
   const codeSnippets = content?.code_snippets || [];
+  const flashcards = content?.flashcards || [];
 
   if (lesson.type === "assignment") {
     return (
