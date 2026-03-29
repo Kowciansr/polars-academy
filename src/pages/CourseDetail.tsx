@@ -155,11 +155,6 @@ export default function CourseDetail() {
                     ))}
                   </div>
                   <span className="font-medium text-primary-foreground">4.5</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Users className="h-4 w-4" />
-                  <span>New Course</span>
-                </div>
               </div>
 
               <div className="flex items-center gap-3">
