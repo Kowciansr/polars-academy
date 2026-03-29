@@ -7,12 +7,12 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <span className="text-base font-bold text-primary-foreground">P</span>
+              <span className="text-base font-bold text-primary-foreground">C</span>
             </div>
-            <span className="text-lg font-bold text-foreground">Polars Academy</span>
+            <span className="text-lg font-bold text-foreground">Cika Online Courses</span>
           </Link>
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Polars Academy. All rights reserved.
+            © {new Date().getFullYear()} Cika Online Courses. All rights reserved.
           </p>
         </div>
       </div>
