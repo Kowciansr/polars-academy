@@ -93,7 +93,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
               <p className="mt-2 text-muted-foreground">
                 {isLogin
                   ? "Log in to continue your learning journey"
-                  : "Join thousands of learners mastering Python Polars"}
+                  : "Join thousands of learners at Cika Online Courses"}
               </p>
             </div>
 
