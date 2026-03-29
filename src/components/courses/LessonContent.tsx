@@ -1,4 +1,5 @@
 import { PythonIDE } from "./PythonIDE";
+import { Flashcards, type Flashcard } from "./Flashcards";
 import { BookOpen, FileText, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -21,9 +22,10 @@ interface LessonContentProps {
 }
 
 export function LessonContent({ lesson, isCompleted, isPending, onComplete }: LessonContentProps) {
-  const content = lesson.content as { body?: string; code_snippets?: CodeSnippet[] } | null;
+  const content = lesson.content as { body?: string; code_snippets?: CodeSnippet[]; flashcards?: Flashcard[] } | null;
   const body = content?.body || "";
   const codeSnippets = content?.code_snippets || [];
+  const flashcards = content?.flashcards || [];
 
   if (lesson.type === "assignment") {
     return (
@@ -51,6 +53,7 @@ export function LessonContent({ lesson, isCompleted, isPending, onComplete }: Le
             />
           </div>
         ))}
+        {flashcards.length > 0 && <Flashcards cards={flashcards} />}
         <div className="mt-8 pt-6 border-t border-border flex justify-end">
           <CompleteButton isCompleted={isCompleted} isPending={isPending} onComplete={onComplete} />
         </div>
@@ -90,6 +93,8 @@ export function LessonContent({ lesson, isCompleted, isPending, onComplete }: Le
           ))}
         </div>
       )}
+
+      {flashcards.length > 0 && <Flashcards cards={flashcards} />}
 
       <div className="mt-8 pt-6 border-t border-border flex justify-end">
         <CompleteButton isCompleted={isCompleted} isPending={isPending} onComplete={onComplete} />

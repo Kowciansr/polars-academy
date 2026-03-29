@@ -14,10 +14,8 @@ import {
   Clock, 
   BookOpen, 
   Award, 
-  Users, 
   Star,
   CheckCircle2,
-  Download,
   Globe,
   Calendar,
   Loader2
@@ -155,10 +153,6 @@ export default function CourseDetail() {
                     ))}
                   </div>
                   <span className="font-medium text-primary-foreground">4.5</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Users className="h-4 w-4" />
-                  <span>New Course</span>
                 </div>
               </div>
 
@@ -299,7 +293,6 @@ export default function CourseDetail() {
                   avatar=""
                   bio="Passionate about creating engaging, learner-centered educational experiences that make complex topics accessible and enjoyable."
                   coursesCount={1}
-                  studentsCount={0}
                 />
               </div>
             </div>

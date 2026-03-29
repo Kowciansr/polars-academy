@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Clock, BookOpen, Star, Users } from "lucide-react";
+import { Clock, BookOpen, Star } from "lucide-react";
 
 export interface CourseCardProps {
   id: string;
@@ -91,14 +91,10 @@ export function CourseCard({
           </div>
 
           {/* Rating & Students */}
-          <div className="flex items-center justify-between border-t border-border pt-3">
+          <div className="flex items-center border-t border-border pt-3">
             <div className="flex items-center gap-1.5">
               <Star className="h-4 w-4 fill-warning text-warning" />
               <span className="font-medium text-foreground">{rating.toFixed(1)}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span>{studentsCount.toLocaleString()} students</span>
             </div>
           </div>
         </div>

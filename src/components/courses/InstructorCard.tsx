@@ -6,7 +6,6 @@ export interface InstructorCardProps {
   avatar: string;
   bio: string;
   coursesCount: number;
-  studentsCount: number;
 }
 
 export function InstructorCard({
@@ -15,7 +14,6 @@ export function InstructorCard({
   avatar,
   bio,
   coursesCount,
-  studentsCount,
 }: InstructorCardProps) {
   return (
     <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-6 text-center sm:flex-row sm:items-start sm:text-left">
@@ -49,9 +47,6 @@ export function InstructorCard({
         <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
           <Badge variant="secondary">
             {coursesCount} Courses
-          </Badge>
-          <Badge variant="secondary">
-            {studentsCount.toLocaleString()} Students
           </Badge>
         </div>
       </div>
