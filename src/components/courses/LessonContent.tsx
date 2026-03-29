@@ -1,4 +1,5 @@
 import { PythonIDE } from "./PythonIDE";
+import { Flashcards, type Flashcard } from "./Flashcards";
 import { BookOpen, FileText, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
