@@ -53,6 +53,7 @@ export function LessonContent({ lesson, isCompleted, isPending, onComplete }: Le
             />
           </div>
         ))}
+        {flashcards.length > 0 && <Flashcards cards={flashcards} />}
         <div className="mt-8 pt-6 border-t border-border flex justify-end">
           <CompleteButton isCompleted={isCompleted} isPending={isPending} onComplete={onComplete} />
         </div>
