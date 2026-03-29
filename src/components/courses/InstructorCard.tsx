@@ -6,7 +6,6 @@ export interface InstructorCardProps {
   avatar: string;
   bio: string;
   coursesCount: number;
-  studentsCount: number;
 }
 
 export function InstructorCard({
