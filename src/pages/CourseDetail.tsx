@@ -14,10 +14,8 @@ import {
   Clock, 
   BookOpen, 
   Award, 
-  Users, 
   Star,
   CheckCircle2,
-  Download,
   Globe,
   Calendar,
   Loader2
