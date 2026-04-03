@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import kowcikaAvatar from "@/assets/kowcika-avatar.jpeg";
 import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -157,9 +158,11 @@ export default function CourseDetail() {
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-foreground/20 text-primary-foreground font-semibold text-sm ring-2 ring-primary-foreground/20">
-                  KA
-                </div>
+                <img
+                  src={kowcikaAvatar}
+                  alt="Kowcika Asaithambi"
+                  className="h-10 w-10 rounded-full object-cover ring-2 ring-primary-foreground/20"
+                />
                 <div>
                   <p className="text-sm text-primary-foreground/70">Instructional Designer</p>
                   <p className="font-medium text-primary-foreground">
@@ -290,7 +293,7 @@ export default function CourseDetail() {
                 <InstructorCard
                   name="Kowcika Asaithambi"
                   title="Instructional Designer"
-                  avatar=""
+                  avatar={kowcikaAvatar}
                   bio="Passionate about creating engaging, learner-centered educational experiences that make complex topics accessible and enjoyable."
                   coursesCount={1}
                 />
