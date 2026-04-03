@@ -50,6 +50,11 @@ export function Header() {
                 Start Course
               </Link>
             </Button>
+            <Button variant="ghost" size="sm" onClick={toggleTheme} className="justify-start gap-2">
+              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute ml-0 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              Toggle Theme
+            </Button>
           </nav>
         </div>
       )}
