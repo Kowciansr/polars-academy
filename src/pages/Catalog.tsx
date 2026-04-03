@@ -20,10 +20,15 @@ export default function Catalog() {
 
   const { data: courses, isLoading, error } = useCourses();
 
-  // Calculate duration in hours from lessons
+  // Calculate duration in hours from actual lesson data
   const getCourseDuration = (course: NonNullable<typeof courses>[0]) => {
-    // For now, return a placeholder - this would need lesson duration data
-    return 8; // Default to 8 hours
+    const totalMinutes = course.modules?.reduce((acc, m) => {
+      return acc + (m.lessons?.reduce((lessonAcc, l) => {
+        const minutes = parseInt((l.duration || "0").replace(/[^0-9]/g, "")) || 0;
+        return lessonAcc + minutes;
+      }, 0) || 0);
+    }, 0) || 0;
+    return Math.ceil(totalMinutes / 60);
   };
 
   const filteredCourses = (courses || []).filter((course) => {
