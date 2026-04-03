@@ -1,10 +1,14 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "next-themes";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -21,6 +25,10 @@ export function Header() {
         <nav className="hidden items-center gap-4 md:flex">
           <Button variant="default" size="sm" asChild>
             <Link to="/course/python-zero-to-hero">Start Course</Link>
+          </Button>
+          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
         </nav>
 
@@ -41,6 +49,11 @@ export function Header() {
               <Link to="/course/python-zero-to-hero" onClick={() => setIsMobileMenuOpen(false)}>
                 Start Course
               </Link>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={toggleTheme} className="justify-start gap-2">
+              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute ml-0 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              Toggle Theme
             </Button>
           </nav>
         </div>
