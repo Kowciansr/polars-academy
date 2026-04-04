@@ -293,7 +293,7 @@ export default function CourseDetail() {
                 <InstructorCard
                   name="Kowcika Asaithambi"
                   title="Instructional Designer"
-                  avatar={pythonAvatar}
+                  avatar={kowcikaAvatar}
                   bio="Passionate about creating engaging, learner-centered educational experiences that make complex topics accessible and enjoyable."
                   coursesCount={1}
                 />
