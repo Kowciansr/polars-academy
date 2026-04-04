@@ -140,16 +140,26 @@ export default function CoursePlayer() {
   };
 
   const handleQuizComplete = async (score: number, total: number) => {
-    if (!currentLesson || !user) return;
+    if (!currentLesson) return;
 
-    try {
-      await updateProgressMutation.mutateAsync({
-        lessonId: currentLesson.id,
-        completed: true,
-        quizScore: (score / total) * 100,
+    if (user) {
+      try {
+        await updateProgressMutation.mutateAsync({
+          lessonId: currentLesson.id,
+          completed: true,
+          quizScore: (score / total) * 100,
+        });
+      } catch (error) {
+        console.error("Failed to save quiz progress:", error);
+      }
+    } else {
+      setLocalProgress((prev) => {
+        const next = new Set(prev);
+        next.add(currentLesson.id);
+        localStorage.setItem("lesson_progress", JSON.stringify([...next]));
+        return next;
       });
-    } catch (error) {
-      console.error("Failed to save quiz progress:", error);
+      toast({ title: "Quiz completed!", description: `Score: ${score}/${total}. Progress saved locally.` });
     }
   };
 
