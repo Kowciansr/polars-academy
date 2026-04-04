@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Quiz, type QuizQuestion } from "@/components/courses/Quiz";
+import { useToast } from "@/hooks/use-toast";
 import { CertificateDialog } from "@/components/courses/CertificateDialog";
 import { LessonContent } from "@/components/courses/LessonContent";
 import { Link, useParams, useNavigate } from "react-router-dom";
@@ -48,9 +49,18 @@ export default function CoursePlayer() {
   const { courseId, lessonId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
   
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [openModules, setOpenModules] = useState<string[]>([]);
+  const [localProgress, setLocalProgress] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem("lesson_progress");
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
 
   const { data: course, isLoading: courseLoading } = useCourse(courseId);
   const { data: lessonProgress, isLoading: progressLoading } = useLessonProgress(course?.id);
@@ -69,11 +79,18 @@ export default function CoursePlayer() {
   const prevLesson = allLessons[currentLessonIndex - 1];
   const nextLesson = allLessons[currentLessonIndex + 1];
 
-  // Build progress map
+  // Build progress map (combine DB + localStorage)
   const progressMap = new Map(lessonProgress?.map((p) => [p.lesson_id, p]) || []);
 
+  // Check completion from either source
+  const isLessonCompleted = useCallback((lessonId: string) => {
+    return progressMap.get(lessonId)?.completed || localProgress.has(lessonId);
+  }, [progressMap, localProgress]);
+
   // Calculate progress
-  const completedCount = lessonProgress?.filter((p) => p.completed).length || 0;
+  const completedCount = user
+    ? (lessonProgress?.filter((p) => p.completed).length || 0)
+    : allLessons.filter((l) => localProgress.has(l.id)).length;
   const progressPercent = allLessons.length > 0 
     ? Math.round((completedCount / allLessons.length) * 100) 
     : 0;
@@ -99,29 +116,50 @@ export default function CoursePlayer() {
   };
 
   const handleLessonComplete = async () => {
-    if (!currentLesson || !user) return;
+    if (!currentLesson) return;
 
-    try {
-      await updateProgressMutation.mutateAsync({
-        lessonId: currentLesson.id,
-        completed: true,
+    if (user) {
+      try {
+        await updateProgressMutation.mutateAsync({
+          lessonId: currentLesson.id,
+          completed: true,
+        });
+      } catch (error) {
+        console.error("Failed to update progress:", error);
+      }
+    } else {
+      // Anonymous: save to localStorage
+      setLocalProgress((prev) => {
+        const next = new Set(prev);
+        next.add(currentLesson.id);
+        localStorage.setItem("lesson_progress", JSON.stringify([...next]));
+        return next;
       });
-    } catch (error) {
-      console.error("Failed to update progress:", error);
+      toast({ title: "Lesson completed!", description: "Progress saved locally." });
     }
   };
 
   const handleQuizComplete = async (score: number, total: number) => {
-    if (!currentLesson || !user) return;
+    if (!currentLesson) return;
 
-    try {
-      await updateProgressMutation.mutateAsync({
-        lessonId: currentLesson.id,
-        completed: true,
-        quizScore: (score / total) * 100,
+    if (user) {
+      try {
+        await updateProgressMutation.mutateAsync({
+          lessonId: currentLesson.id,
+          completed: true,
+          quizScore: (score / total) * 100,
+        });
+      } catch (error) {
+        console.error("Failed to save quiz progress:", error);
+      }
+    } else {
+      setLocalProgress((prev) => {
+        const next = new Set(prev);
+        next.add(currentLesson.id);
+        localStorage.setItem("lesson_progress", JSON.stringify([...next]));
+        return next;
       });
-    } catch (error) {
-      console.error("Failed to save quiz progress:", error);
+      toast({ title: "Quiz completed!", description: `Score: ${score}/${total}. Progress saved locally.` });
     }
   };
 
@@ -226,7 +264,7 @@ export default function CoursePlayer() {
                   {course.modules?.map((module, moduleIndex) => {
                     const moduleLessons = module.lessons || [];
                     const moduleLessonsCompleted = moduleLessons.filter(
-                      (l) => progressMap.get(l.id)?.completed
+                      (l) => isLessonCompleted(l.id)
                     ).length;
                     const moduleCompleted = moduleLessonsCompleted === moduleLessons.length && moduleLessons.length > 0;
 
@@ -273,7 +311,7 @@ export default function CoursePlayer() {
                             {moduleLessons.map((lesson) => {
                               const Icon = getLessonIcon(lesson.type);
                               const isActive = lesson.id === currentLesson?.id;
-                              const isCompleted = progressMap.get(lesson.id)?.completed;
+                              const isCompleted = isLessonCompleted(lesson.id);
 
                               return (
                                 <button
@@ -366,7 +404,7 @@ export default function CoursePlayer() {
               ) : currentLesson ? (
                 <LessonContent
                   lesson={currentLesson}
-                  isCompleted={!!progressMap.get(currentLesson.id)?.completed}
+                  isCompleted={isLessonCompleted(currentLesson.id)}
                   isPending={updateProgressMutation.isPending}
                   onComplete={handleLessonComplete}
                 />
@@ -422,7 +460,7 @@ export default function CoursePlayer() {
                       {currentLesson.duration}
                     </span>
                   )}
-                  {progressMap.get(currentLesson.id)?.completed && (
+                  {isLessonCompleted(currentLesson.id) && (
                     <Badge variant="completed">
                       <CheckCircle2 className="h-3 w-3 mr-1" />
                       Completed
