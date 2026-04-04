@@ -116,15 +116,26 @@ export default function CoursePlayer() {
   };
 
   const handleLessonComplete = async () => {
-    if (!currentLesson || !user) return;
+    if (!currentLesson) return;
 
-    try {
-      await updateProgressMutation.mutateAsync({
-        lessonId: currentLesson.id,
-        completed: true,
+    if (user) {
+      try {
+        await updateProgressMutation.mutateAsync({
+          lessonId: currentLesson.id,
+          completed: true,
+        });
+      } catch (error) {
+        console.error("Failed to update progress:", error);
+      }
+    } else {
+      // Anonymous: save to localStorage
+      setLocalProgress((prev) => {
+        const next = new Set(prev);
+        next.add(currentLesson.id);
+        localStorage.setItem("lesson_progress", JSON.stringify([...next]));
+        return next;
       });
-    } catch (error) {
-      console.error("Failed to update progress:", error);
+      toast({ title: "Lesson completed!", description: "Progress saved locally." });
     }
   };
 
