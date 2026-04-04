@@ -49,9 +49,18 @@ export default function CoursePlayer() {
   const { courseId, lessonId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
   
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [openModules, setOpenModules] = useState<string[]>([]);
+  const [localProgress, setLocalProgress] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem("lesson_progress");
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
 
   const { data: course, isLoading: courseLoading } = useCourse(courseId);
   const { data: lessonProgress, isLoading: progressLoading } = useLessonProgress(course?.id);
@@ -70,11 +79,18 @@ export default function CoursePlayer() {
   const prevLesson = allLessons[currentLessonIndex - 1];
   const nextLesson = allLessons[currentLessonIndex + 1];
 
-  // Build progress map
+  // Build progress map (combine DB + localStorage)
   const progressMap = new Map(lessonProgress?.map((p) => [p.lesson_id, p]) || []);
 
+  // Check completion from either source
+  const isLessonCompleted = useCallback((lessonId: string) => {
+    return progressMap.get(lessonId)?.completed || localProgress.has(lessonId);
+  }, [progressMap, localProgress]);
+
   // Calculate progress
-  const completedCount = lessonProgress?.filter((p) => p.completed).length || 0;
+  const completedCount = user
+    ? (lessonProgress?.filter((p) => p.completed).length || 0)
+    : allLessons.filter((l) => localProgress.has(l.id)).length;
   const progressPercent = allLessons.length > 0 
     ? Math.round((completedCount / allLessons.length) * 100) 
     : 0;
