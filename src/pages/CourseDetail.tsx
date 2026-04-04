@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import kowcikaAvatar from "@/assets/kowcika-avatar.jpeg";
+import pythonAvatar from "@/assets/python-course-avatar.png";
 import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -159,8 +159,8 @@ export default function CourseDetail() {
 
               <div className="flex items-center gap-3">
                 <img
-                  src={kowcikaAvatar}
-                  alt="Kowcika Asaithambi"
+                  src={pythonAvatar}
+                  alt="Python Course"
                   className="h-10 w-10 rounded-full object-cover ring-2 ring-primary-foreground/20"
                 />
                 <div>
@@ -186,7 +186,7 @@ export default function CourseDetail() {
             {/* Enrollment Card */}
             <div className="lg:sticky lg:top-24">
               <div className="overflow-hidden rounded-xl border border-border bg-card shadow-elevated">
-                <div className="video-container group cursor-pointer">
+                <div className="video-container group cursor-pointer" onClick={handleStartLearning}>
                   <img
                     src={course.thumbnail_url || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=675&fit=crop"}
                     alt={course.title}
@@ -293,7 +293,7 @@ export default function CourseDetail() {
                 <InstructorCard
                   name="Kowcika Asaithambi"
                   title="Instructional Designer"
-                  avatar={kowcikaAvatar}
+                  avatar={pythonAvatar}
                   bio="Passionate about creating engaging, learner-centered educational experiences that make complex topics accessible and enjoyable."
                   coursesCount={1}
                 />
