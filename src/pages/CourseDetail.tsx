@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import kowcikaAvatar from "@/assets/kowcika-avatar.jpeg";
+import pythonAvatar from "@/assets/python-course-avatar.png";
 import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
