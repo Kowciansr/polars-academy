@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import kowcikaAvatar from "@/assets/kowcika-avatar.jpeg";
 import pythonAvatar from "@/assets/python-course-avatar.png";
 import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/layout/Header";
@@ -159,8 +160,8 @@ export default function CourseDetail() {
 
               <div className="flex items-center gap-3">
                 <img
-                  src={pythonAvatar}
-                  alt="Python Course"
+                  src={kowcikaAvatar}
+                  alt="Kowcika Asaithambi"
                   className="h-10 w-10 rounded-full object-cover ring-2 ring-primary-foreground/20"
                 />
                 <div>
@@ -186,25 +187,30 @@ export default function CourseDetail() {
             {/* Enrollment Card */}
             <div className="lg:sticky lg:top-24">
               <div className="overflow-hidden rounded-xl border border-border bg-card shadow-elevated">
-                <div className="video-container group cursor-pointer" onClick={handleStartLearning}>
+                <div className="relative aspect-video overflow-hidden">
                   <img
                     src={course.thumbnail_url || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=675&fit=crop"}
                     alt={course.title}
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 transition-colors group-hover:bg-black/50">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg transition-transform group-hover:scale-110">
-                      <Play className="h-6 w-6 ml-0.5" />
-                    </div>
-                  </div>
                 </div>
 
                 <div className="space-y-4 p-6">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-foreground">
-                      {course.price === 0 ? "Free" : `$${course.price}`}
-                    </p>
-                    <p className="text-sm text-muted-foreground">Lifetime access</p>
+                  <div className="flex flex-col items-center gap-3 text-center">
+                    <img
+                      src={pythonAvatar}
+                      alt="Python Course"
+                      loading="lazy"
+                      width={80}
+                      height={80}
+                      className="h-20 w-20 rounded-full object-cover ring-4 ring-primary/10"
+                    />
+                    <div>
+                      <p className="text-3xl font-bold text-foreground">
+                        {course.price === 0 ? "Free" : `$${course.price}`}
+                      </p>
+                      <p className="text-sm text-muted-foreground">Lifetime access</p>
+                    </div>
                   </div>
 
                   <Button 
@@ -293,7 +299,7 @@ export default function CourseDetail() {
                 <InstructorCard
                   name="Kowcika Asaithambi"
                   title="Instructional Designer"
-                  avatar={pythonAvatar}
+                  avatar={kowcikaAvatar}
                   bio="Passionate about creating engaging, learner-centered educational experiences that make complex topics accessible and enjoyable."
                   coursesCount={1}
                 />
