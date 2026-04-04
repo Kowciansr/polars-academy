@@ -186,17 +186,12 @@ export default function CourseDetail() {
             {/* Enrollment Card */}
             <div className="lg:sticky lg:top-24">
               <div className="overflow-hidden rounded-xl border border-border bg-card shadow-elevated">
-                <div className="video-container group cursor-pointer" onClick={handleStartLearning}>
+                <div className="relative aspect-video overflow-hidden">
                   <img
                     src={course.thumbnail_url || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=675&fit=crop"}
                     alt={course.title}
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 transition-colors group-hover:bg-black/50">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg transition-transform group-hover:scale-110">
-                      <Play className="h-6 w-6 ml-0.5" />
-                    </div>
-                  </div>
                 </div>
 
                 <div className="space-y-4 p-6">
