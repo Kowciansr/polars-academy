@@ -450,7 +450,7 @@ export default function CoursePlayer() {
                       {currentLesson.duration}
                     </span>
                   )}
-                  {progressMap.get(currentLesson.id)?.completed && (
+                  {isLessonCompleted(currentLesson.id) && (
                     <Badge variant="completed">
                       <CheckCircle2 className="h-3 w-3 mr-1" />
                       Completed
