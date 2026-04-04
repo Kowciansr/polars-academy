@@ -394,7 +394,7 @@ export default function CoursePlayer() {
               ) : currentLesson ? (
                 <LessonContent
                   lesson={currentLesson}
-                  isCompleted={!!progressMap.get(currentLesson.id)?.completed}
+                  isCompleted={isLessonCompleted(currentLesson.id)}
                   isPending={updateProgressMutation.isPending}
                   onComplete={handleLessonComplete}
                 />
