@@ -159,8 +159,8 @@ export default function CourseDetail() {
 
               <div className="flex items-center gap-3">
                 <img
-                  src={kowcikaAvatar}
-                  alt="Kowcika Asaithambi"
+                  src={pythonAvatar}
+                  alt="Python Course"
                   className="h-10 w-10 rounded-full object-cover ring-2 ring-primary-foreground/20"
                 />
                 <div>
