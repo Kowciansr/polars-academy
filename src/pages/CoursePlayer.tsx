@@ -301,7 +301,7 @@ export default function CoursePlayer() {
                             {moduleLessons.map((lesson) => {
                               const Icon = getLessonIcon(lesson.type);
                               const isActive = lesson.id === currentLesson?.id;
-                              const isCompleted = progressMap.get(lesson.id)?.completed;
+                              const isCompleted = isLessonCompleted(lesson.id);
 
                               return (
                                 <button
