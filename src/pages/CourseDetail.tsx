@@ -196,11 +196,21 @@ export default function CourseDetail() {
                 </div>
 
                 <div className="space-y-4 p-6">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-foreground">
-                      {course.price === 0 ? "Free" : `$${course.price}`}
-                    </p>
-                    <p className="text-sm text-muted-foreground">Lifetime access</p>
+                  <div className="flex flex-col items-center gap-3 text-center">
+                    <img
+                      src={pythonAvatar}
+                      alt="Python Course"
+                      loading="lazy"
+                      width={80}
+                      height={80}
+                      className="h-20 w-20 rounded-full object-cover ring-4 ring-primary/10"
+                    />
+                    <div>
+                      <p className="text-3xl font-bold text-foreground">
+                        {course.price === 0 ? "Free" : `$${course.price}`}
+                      </p>
+                      <p className="text-sm text-muted-foreground">Lifetime access</p>
+                    </div>
                   </div>
 
                   <Button 
