@@ -254,7 +254,7 @@ export default function CoursePlayer() {
                   {course.modules?.map((module, moduleIndex) => {
                     const moduleLessons = module.lessons || [];
                     const moduleLessonsCompleted = moduleLessons.filter(
-                      (l) => progressMap.get(l.id)?.completed
+                      (l) => isLessonCompleted(l.id)
                     ).length;
                     const moduleCompleted = moduleLessonsCompleted === moduleLessons.length && moduleLessons.length > 0;
 
